@@ -204,8 +204,6 @@ float freq_to_stripe = NUM_LEDS / 40; // /2 так как симметрия, и
 #include "FastLED.h"
 CRGB leds[NUM_LEDS];
 
-#include "GyverButton.h"
-GButton butt1(BTN_PIN);
 
 #include "IRLremote.h"
 CHashIR IRLremote;
@@ -265,7 +263,6 @@ void setup() {
 
   pinMode(POT_GND, OUTPUT);
   digitalWrite(POT_GND, LOW);
-  butt1.setTimeout(900);
 
   IRLremote.begin(IR_PIN);
 
@@ -305,7 +302,6 @@ void setup() {
 }
 
 void loop() {
-  buttonTick();     // опрос и обработка кнопки
   remoteTick();     // опрос ИК пульта
   mainLoop();       // главный цикл обработки и отрисовки
   eepromTick();     // проверка не пора ли сохранить настройки
@@ -875,15 +871,6 @@ void analyzeAudio() {
   fht_mag_log(); // take the output of the fht
 }
 
-void buttonTick() {
-  butt1.tick();  // обязательная функция отработки. Должна постоянно опрашиваться
-  if (butt1.isSingle())                              // если единичное нажатие
-    if (++this_mode >= MODE_AMOUNT) this_mode = 0;   // изменить режим
-
-  if (butt1.isHolded()) {     // кнопка удержана
-    fullLowPass();
-  }
-}
 void fullLowPass() {
   digitalWrite(13, HIGH);   // включить светодиод 13 пин
   FastLED.setBrightness(0); // погасить ленту
