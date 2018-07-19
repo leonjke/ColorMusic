@@ -3,7 +3,7 @@
    Библиотеки идут в архиве с проектом! https://alexgyver.ru/colormusic/
    Крутейшая свето-цветомузыка на Arduino и адресной светодиодной ленте WS2812b.
    Данная версия поддерживает около 410 светодиодов!
-   Версия для ИК пульта KEYES
+   Версия для ИК пульта WAVGAT
    Управление:
     - Однократное нажатие кнопки: смена режима
     - Удержание кнопки: калибровка нижнего порога шума
@@ -127,7 +127,7 @@ float SMOOTH = 0.5;         // коэффициент плавности ани�
 
 // режим цветомузыки
 float SMOOTH_FREQ = 0.8;          // коэффициент плавности анимации частот (по умолчанию 0.8)
-float MAX_COEF_FREQ = 1.2;        // коэффициент порога для "вспышки" цветомузыки (по умолчанию 1.5)
+float MAX_COEF_FREQ = 1.5;        // коэффициент порога для "вспышки" цветомузыки (по умолчанию 1.5)
 #define SMOOTH_STEP 20            // шаг уменьшения яркости в режиме цветомузыки (чем больше, тем быстрее гаснет)
 #define LOW_COLOR HUE_RED         // цвет низких частот
 #define MID_COLOR HUE_GREEN       // цвет средних
@@ -169,23 +169,23 @@ byte HUE_STEP = 5;
 // --------------------------- НАСТРОЙКИ ---------------------------
 
 // ----- КНОПКИ ПУЛЬТА -----
-#define BUTT_UP     0xE51CA6AD
-#define BUTT_DOWN   0xD22353AD
-#define BUTT_LEFT   0x517068AD
-#define BUTT_RIGHT  0xAC2A56AD
-#define BUTT_OK     0x1B92DDAD
-#define BUTT_1      0x68E456AD
-#define BUTT_2      0xF08A26AD
-#define BUTT_3      0x151CD6AD
-#define BUTT_4      0x18319BAD
-#define BUTT_5      0xF39EEBAD
-#define BUTT_6      0x4AABDFAD
-#define BUTT_7      0xE25410AD
-#define BUTT_8      0x297C76AD
-#define BUTT_9      0x14CE54AD
-#define BUTT_0      0xC089F6AD
-#define BUTT_STAR   0xAF3F1BAD
-#define BUTT_HASH   0x38379AD
+#define BUTT_UP     0xF39EEBAD
+#define BUTT_DOWN   0xC089F6AD
+#define BUTT_LEFT   0xE25410AD
+#define BUTT_RIGHT  0x14CE54AD
+#define BUTT_OK     0x297C76AD
+#define BUTT_1      0x4E5BA3AD
+#define BUTT_2      0xE51CA6AD
+#define BUTT_3      0xE207E1AD
+#define BUTT_4      0x517068AD
+#define BUTT_5      0x1B92DDAD
+#define BUTT_6      0xAC2A56AD
+#define BUTT_7      0x5484B6AD
+#define BUTT_8      0xD22353AD
+#define BUTT_9      0xDF3F4BAD
+#define BUTT_0      0xF08A26AD
+#define BUTT_STAR   0x68E456AD
+#define BUTT_HASH   0x151CD6AD
 // ----- КНОПКИ ПУЛЬТА -----
 
 // ------------------------------ ДЛЯ РАЗРАБОТЧИКОВ --------------------------------
