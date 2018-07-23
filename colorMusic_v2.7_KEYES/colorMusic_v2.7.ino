@@ -192,7 +192,7 @@ byte HUE_STEP = 5;
 #define MODE_AMOUNT 9      // количество режимов
 
 #define STRIPE NUM_LEDS / 5
-float freq_to_stripe = NUM_LEDS / 40; // /2 так как симметрия, и /20 так как 20 частот
+float freq_to_stripe = NUM_LEDS / 20; // /2 так как симметрия, и /20 так как 20 частот
 
 #define FHT_N 64         // ширина спектра х2
 #define LOG_OUT 1
@@ -380,16 +380,16 @@ void mainLoop() {
         for (int i = 0 ; i < 32 ; i++) {
           if (fht_log_out[i] < SPEKTR_LOW_PASS) fht_log_out[i] = 0;
         }
-        // низкие частоты, выборка со 2 по 5 тон (0 и 1 зашумленные!)
-        for (byte i = 2; i < 6; i++) {
+
+        for (byte i = 2; i < 5; i++) {
           if (fht_log_out[i] > colorMusic[0]) colorMusic[0] = fht_log_out[i];
         }
-        // средние частоты, выборка с 6 по 10 тон
-        for (byte i = 6; i < 11; i++) {
+
+        for (byte i = 5; i < 9; i++) {
           if (fht_log_out[i] > colorMusic[1]) colorMusic[1] = fht_log_out[i];
         }
-        // высокие частоты, выборка с 11 по 31 тон
-        for (byte i = 11; i < 32; i++) {
+
+        for (byte i = 9; i < 32; i++) {
           if (fht_log_out[i] > colorMusic[2]) colorMusic[2] = fht_log_out[i];
         }
         freq_max = 0;
@@ -522,21 +522,24 @@ void animation() {
     case 4:
       switch (freq_strobe_mode) {
         case 0:
-          if (colorMusicFlash[2]) HIGHS();
-          else if (colorMusicFlash[1]) MIDS();
-          else if (colorMusicFlash[0]) LOWS();
+          if (colorMusicFlash[0]) WHITE();
           else SILENCE();
           break;
         case 1:
-          if (colorMusicFlash[2]) HIGHS();
+          if (colorMusicFlash[0]) LIGHT_COLORS();
           else SILENCE();
           break;
         case 2:
-          if (colorMusicFlash[1]) MIDS();
+          if (colorMusicFlash[0]) {
+            if (++this_color > 255) this_color = 0;
+            for (int i = 0; i < NUM_LEDS; i++) leds[i] = CHSV(this_color, LIGHT_SAT, 255);
+          }
           else SILENCE();
           break;
         case 3:
-          if (colorMusicFlash[0]) LOWS();
+          if (colorMusicFlash[2]) HIGHS();
+          else if (colorMusicFlash[1]) MIDS();
+          else if (colorMusicFlash[0]) LOWS();
           else SILENCE();
           break;
       }
@@ -549,7 +552,8 @@ void animation() {
       break;
     case 6:
       switch (light_mode) {
-        case 0: for (int i = 0; i < NUM_LEDS; i++) leds[i] = CHSV(LIGHT_COLOR, LIGHT_SAT, 255);
+        case 0: 
+          LIGHT_COLORS(); 
           break;
         case 1:
           if (millis() - color_timer > COLOR_SPEED) {
@@ -617,6 +621,14 @@ void animation() {
       }
       break;
   }
+}
+
+void WHITE(){
+  for (int i = 0; i < NUM_LEDS; i++) leds[i] = CRGB::White;
+}
+
+void LIGHT_COLORS(){
+  for (int i = 0; i < NUM_LEDS; i++) leds[i] = leds[i] = CHSV(LIGHT_COLOR, LIGHT_SAT, 255); 
 }
 
 void HIGHS() {
@@ -701,7 +713,11 @@ void remoteTick() {
               break;
             case 2:
             case 3:
-            case 4: MAX_COEF_FREQ = smartIncrFloat(MAX_COEF_FREQ, 0.1, 0, 5);
+            case 4:
+            if (freq_strobe_mode==1){
+                LIGHT_SAT = smartIncr(LIGHT_SAT, 20, 0, 255);
+              } else 
+                MAX_COEF_FREQ = smartIncrFloat(MAX_COEF_FREQ, 0.1, 0, 5);
               break;
             case 5: STROBE_PERIOD = smartIncr(STROBE_PERIOD, 20, 1, 1000);
               break;
@@ -734,7 +750,12 @@ void remoteTick() {
               break;
             case 2:
             case 3:
-            case 4: MAX_COEF_FREQ = smartIncrFloat(MAX_COEF_FREQ, -0.1, 0, 5);
+            case 4:
+              if (freq_strobe_mode == 1){
+                LIGHT_SAT = smartIncr(LIGHT_SAT, -20, 0, 255);
+              }
+              else
+                MAX_COEF_FREQ = smartIncrFloat(MAX_COEF_FREQ, -0.1, 0, 5);
               break;
             case 5: STROBE_PERIOD = smartIncr(STROBE_PERIOD, -20, 1, 1000);
               break;
@@ -767,7 +788,12 @@ void remoteTick() {
               break;
             case 2:
             case 3:
-            case 4: SMOOTH_FREQ = smartIncrFloat(SMOOTH_FREQ, -0.05, 0.05, 1);
+            case 4:
+              if (freq_strobe_mode == 1){
+                LIGHT_COLOR = smartIncr(LIGHT_COLOR, -10, 0, 255);
+              }
+              else
+                SMOOTH_FREQ = smartIncrFloat(SMOOTH_FREQ, -0.05, 0.05, 1);
               break;
             case 5: STROBE_SMOOTH = smartIncr(STROBE_SMOOTH, -20, 0, 255);
               break;
@@ -800,7 +826,12 @@ void remoteTick() {
               break;
             case 2:
             case 3:
-            case 4: SMOOTH_FREQ = smartIncrFloat(SMOOTH_FREQ, 0.05, 0.05, 1);
+            case 4:
+              if (freq_strobe_mode == 1){
+                LIGHT_COLOR = smartIncr(LIGHT_COLOR, 10, 0, 255);
+              }
+              else
+                SMOOTH_FREQ = smartIncrFloat(SMOOTH_FREQ, 0.05, 0.05, 1);
               break;
             case 5: STROBE_SMOOTH = smartIncr(STROBE_SMOOTH, 20, 0, 255);
               break;
